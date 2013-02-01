@@ -29,7 +29,7 @@ def index():
             'body': 'The Avengers movie was so cool!'
         }
         ]
-    return render_template("index.html",
+    return render_template('index.html',
                 title = 'Home',
                 user = user,
                 posts = posts)
