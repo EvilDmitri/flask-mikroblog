@@ -11,7 +11,8 @@
 <body>
     <div>Mickroblog: <a href="/index">Home</a> </div>
     <hr>
-    {% with messages = get_flashed_messages() %}
+
+    {% with messages = get_flashed_messages() %} 
         {% if messages %}
             <ul>
                 {% for message in messages %}
