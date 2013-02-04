@@ -12,6 +12,7 @@ class User(db.Model):
     posts = db.relationship('Post', backref='author', lazy='dynamic')
 
     def avatar(self, size):  # avatar method returns the URL of the user's avatar image
+                              # d=mm default avatar - mystery man, s= size
         return 'http://www.gravatar.com/avatar/' + md5(self.email).hexdigest() + '?d=mm&s=' + str(size)
 
     def is_authenticated(self):
