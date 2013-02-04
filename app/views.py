@@ -50,8 +50,9 @@ def after_login(resp):
 
 @app.route('/')
 @app.route('/index')
+@login_user()
 def index():
-    user = { 'nickname': 'Dimas' }
+    user = g.user
     posts = [ #fake array of posts
         {
             'author': { 'nickname': 'John'},
