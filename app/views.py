@@ -6,6 +6,11 @@ from app import app, db, lm, oid
 from models import User, ROLE_USER, ROLE_ADMIN
 
 
+@app.before_request
+def before_request():
+    g.user = current_user
+
+
 @app.route('/login', methods=['GET', 'POST'])
 @oid.loginhandler
 def login():
