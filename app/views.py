@@ -11,26 +11,9 @@ def before_request():
     g.user = current_user
 
 
-@app.route('/login', methods=['GET', 'POST'])
-@oid.loginhandler
-def login():
-    if g.user is not None and g.user.is_authenticated():
-        return redirect(url_for('index'))
-    form = LoginForm()
-    if form.validate_on_submit():
-        session['remember_me'] = form.remember_me.data
-        return oid.try_login(form.openid.data, ask_for=['nickname', 'email'])
-
-    return render_template('login.html',
-                title = 'Sign In',
-                form = form,
-                providers = app.config['OPENID_PROVIDERS'])
-
-
-@app.route('/logout')
-def logout():
-    logout_user()
-    return redirect(url_for('index'))
+@lm.user_loader
+def load_user(id):              # function will be used by Flask-Login
+    return User.query.get(int(id))
 
 
 @oid.after_login
@@ -54,6 +37,29 @@ def after_login(resp):
         return redirect(request.args.get('next') or url_for('index'))
 
 
+
+@app.route('/login', methods=['GET', 'POST'])
+@oid.loginhandler
+def login():
+    if g.user is not None and g.user.is_authenticated():
+        return redirect(url_for('index'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        session['remember_me'] = form.remember_me.data
+        return oid.try_login(form.openid.data, ask_for=['nickname', 'email'])
+
+    return render_template('login.html',
+                title = 'Sign In',
+                form = form,
+                providers = app.config['OPENID_PROVIDERS'])
+
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
+
+
 @app.route('/')
 @app.route('/index')
 @login_required
@@ -75,6 +81,16 @@ def index():
                 posts = posts)
 
 
-@lm.user_loader
-def load_user(id):              # function will be used by Flask-Login
-    return User.query.get(int(id))
+@app.route('/user/<nickname>')
+@login_required
+def user(nickname):
+    user = User.query.filter_by(nickname=nickname).first()
+    if user is None:
+        flash('User ' + nickname + ' not found.')
+    posts = [
+        {'author': user, 'body': 'Test post #1'},
+        {'author': user, 'body': 'Test post #2'}
+    ]
+    return render_template('user.html',
+                user = user,
+                posts = posts)
