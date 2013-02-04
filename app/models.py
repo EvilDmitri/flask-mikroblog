@@ -7,9 +7,11 @@ ROLE_ADMIN = 1
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nickname = db.Column(db.String(64), unique=True)
-    email = db.Column(db.String(120), unique=True)
+    email = db.Column(db.String(120), index=True, unique=True)
     role = db.Column(db.SmallInteger, default=ROLE_USER)
     posts = db.relationship('Post', backref='author', lazy='dynamic')
+    about_me = db.Column(db.String(140))
+    last_seen = db.Column(db.DateTime)
 
     def avatar(self, size):  # avatar method returns the URL of the user's avatar image
                               # d=mm default avatar - mystery man, s= size
